@@ -11,5 +11,4 @@ plugins {
 rootProject.name = "KtorfitBridge"
 
 include("generator")
-include("library")
 include("test")

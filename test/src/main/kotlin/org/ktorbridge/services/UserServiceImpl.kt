@@ -1,9 +1,9 @@
 package org.ktorbridge.services
 
+import com.test.proto.UserService
 import io.ktor.http.content.MultiPartData
 import kotlinx.coroutines.delay
 import org.ktorbridge.api.User
-import org.ktorbridge.api.server.UserService
 
 class UserServiceImpl : UserService {
 
@@ -17,8 +17,8 @@ class UserServiceImpl : UserService {
         return User(77, name, "test@mail.com")
     }
 
-    override suspend fun findQuery(value: Long): User {
-        return User(value.toInt(), "test", "test@mail.com")
+    override suspend fun findQuery(id: Long, fast: Boolean?): User {
+        return User(id.toInt(), "test", "test@mail.com")
     }
 
     override suspend fun add(user: User) {

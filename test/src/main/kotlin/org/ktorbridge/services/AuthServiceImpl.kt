@@ -1,9 +1,9 @@
 package org.ktorbridge.services
 
+import com.test.proto.AuthService
 import kotlinx.coroutines.delay
 import org.ktorbridge.api.AuthRequest
 import org.ktorbridge.api.AuthResponse
-import org.ktorbridge.api.server.AuthService
 
 class AuthServiceImpl : AuthService {
 

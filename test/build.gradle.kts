@@ -11,7 +11,6 @@ repositories {
 
 dependencies {
     ksp(project(":generator"))
-    implementation(project(":library"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("de.jensklingenberg.ktorfit:ktorfit-lib:2.5.1")
     implementation("io.ktor:ktor-server-core:3.2.0")
