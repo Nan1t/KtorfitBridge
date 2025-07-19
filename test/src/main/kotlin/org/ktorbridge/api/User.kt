@@ -21,7 +21,7 @@ interface UserService {
     suspend fun list(): List<User>
 
     @GET("users/{name}")
-    suspend fun find(@Path("name") name: String): User
+    suspend fun find(@Path("name") name: String): User?
 
     @GET("users/find")
     suspend fun findQuery(@Query("id") id: Long, @Query("fast") fast: Boolean? = null): User

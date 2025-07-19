@@ -83,6 +83,7 @@ class ServiceGenerator(
         val receiveFn = MemberName("io.ktor.server.request", "receive")
         val receiveMultipartFn = MemberName("io.ktor.server.request", "receiveMultipart")
 
+        val httpStatus = MemberName("io.ktor.http", "HttpStatusCode")
         val routeClass = ClassName("io.ktor.server.routing", "Route")
         val serviceInterface = ClassName(pkg, descriptor.name)
         val funName = "route${descriptor.name}"
@@ -148,7 +149,16 @@ class ServiceGenerator(
             val argsList = ep.parameters.joinToString(", ") { it.name }
 
             funBuilder.addStatement("val result = impl.%N($argsList)", ep.name)
-            funBuilder.addStatement("call.%M(result)", respondFn)
+
+            if (ep.returnType.parameterType.isMarkedNullable) {
+                funBuilder.beginControlFlow("if (result != null)")
+                funBuilder.addStatement("call.%M(result)", respondFn)
+                funBuilder.nextControlFlow("else")
+                funBuilder.addStatement("call.%M(%M.NotFound)", respondFn, httpStatus)
+                funBuilder.endControlFlow()
+            } else {
+                funBuilder.addStatement("call.%M(result)", respondFn)
+            }
 
             funBuilder.endControlFlow()
         }
