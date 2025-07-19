@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm")
+    `java-library`
+    `maven-publish`
 }
 
 repositories {
@@ -20,4 +22,15 @@ tasks.test {
 
 kotlin {
     jvmToolchain(17)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = rootProject.group.toString()
+            artifactId = rootProject.name
+            version = rootProject.version.toString()
+            from(components["java"])
+        }
+    }
 }
