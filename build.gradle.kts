@@ -13,4 +13,4 @@ buildscript {
 }
 
 group = "org.ktorbridge"
-version = "1.0"
+version = "0.1"
