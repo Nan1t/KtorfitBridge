@@ -8,6 +8,11 @@ import org.ktorbridge.processor.BridgeProcessor
 class BridgeProcessorProvider : SymbolProcessorProvider {
 
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return BridgeProcessor(environment.codeGenerator)
+        val basePackage = environment.options["bridgeBasePackage"]
+            ?: error("Base package for ktorfit bridge is not specified")
+        val overridePackage = environment.options["bridgeOverridePackage"]
+            ?: error("Override package for ktorfit bridge is not specified")
+
+        return BridgeProcessor(environment.codeGenerator, basePackage, overridePackage)
     }
 }

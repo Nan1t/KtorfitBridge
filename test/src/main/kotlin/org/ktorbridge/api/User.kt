@@ -24,7 +24,7 @@ interface UserService {
     suspend fun find(@Path("name") name: String): User
 
     @GET("users/find")
-    suspend fun findQuery(@Query("id") value: Long): User
+    suspend fun findQuery(@Query("id") id: Long, @Query("fast") fast: Boolean? = null): User
 
     @POST("add")
     suspend fun add(@Body user: User)

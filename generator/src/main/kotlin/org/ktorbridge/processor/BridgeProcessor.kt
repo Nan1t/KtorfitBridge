@@ -18,10 +18,14 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.PUT
 import org.ktorbridge.generator.ServiceGenerator
 
-class BridgeProcessor(generator: CodeGenerator) : SymbolProcessor {
+class BridgeProcessor(
+    generator: CodeGenerator,
+    basePackage: String,
+    overridePackage: String
+) : SymbolProcessor {
 
     private val serviceMapper = ServiceMapper()
-    private val serviceGenerator = ServiceGenerator(generator)
+    private val serviceGenerator = ServiceGenerator(generator, basePackage, overridePackage)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val services = getAnnotatedClasses(resolver)

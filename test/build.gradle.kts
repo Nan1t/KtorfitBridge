@@ -28,3 +28,8 @@ tasks.test {
 kotlin {
     jvmToolchain(17)
 }
+
+ksp {
+    arg("bridgeBasePackage", "org.ktorbridge.api")
+    arg("bridgeOverridePackage", "com.test.proto")
+}

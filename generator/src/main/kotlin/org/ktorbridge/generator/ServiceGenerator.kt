@@ -13,16 +13,18 @@ import com.squareup.kotlinpoet.FunSpec
 import org.ktorbridge.processor.symbols.HttpMethodType
 
 class ServiceGenerator(
-    private val generator: CodeGenerator
+    private val generator: CodeGenerator,
+    private val basePackage: String,
+    private val overridePackage: String
 ) {
 
     fun generate(descriptor: ServiceDescriptor) {
-        val pkg = "${descriptor.packageName}.server"
+        val pkg = descriptor.packageName.replace(basePackage, overridePackage)
         val interfaceName = descriptor.name
         val builder = FileSpec.builder(pkg, interfaceName)
 
         builder.addType(generateServices(descriptor))
-        builder.addFunction(generateExtensions(descriptor))
+        builder.addFunction(generateExtensions(pkg, descriptor))
         builder.build().writeTo(
             codeGenerator = generator,
             Dependencies(
@@ -69,9 +71,7 @@ class ServiceGenerator(
         return interfaceBuilder.build()
     }
 
-    private fun generateExtensions(descriptor: ServiceDescriptor): FunSpec {
-        val pkg = "${descriptor.packageName}.server"
-
+    private fun generateExtensions(pkg: String, descriptor: ServiceDescriptor): FunSpec {
         val getFn = MemberName("io.ktor.server.routing", "get")
         val postFn = MemberName("io.ktor.server.routing", "post")
         val putFn = MemberName("io.ktor.server.routing", "put")
@@ -106,25 +106,29 @@ class ServiceGenerator(
             funBuilder.beginControlFlow("%M(%S)", methodMember, ep.path)
 
             ep.parameters.forEach { param ->
+                val isNullable = param.type.isMarkedNullable
+                val paramSuffix = if (!isNullable) "!!" else ""
+                val castPrefix = if (isNullable) "?" else ""
+
                 when (param) {
                     is EndpointParameter.Path -> {
-                        val base = "call.pathParameters[%S]!!"
+                        val base = "call.pathParameters[%S]$paramSuffix"
                         val expr = when (param.type.declaration.simpleName.asString()) {
-                            "Int"     -> "$base.toInt()"
-                            "Long"    -> "$base.toLong()"
-                            "Double"  -> "$base.toDouble()"
-                            "Boolean" -> "$base.toBoolean()"
+                            "Int"     -> "$base$castPrefix.toInt()"
+                            "Long"    -> "$base$castPrefix.toLong()"
+                            "Double"  -> "$base$castPrefix.toDouble()"
+                            "Boolean" -> "$base$castPrefix.toBoolean()"
                             else      -> base
                         }
                         funBuilder.addStatement("val %N = $expr", param.name, param.key)
                     }
                     is EndpointParameter.Query -> {
-                        val base = "call.request.queryParameters[%S]!!"
+                        val base = "call.request.queryParameters[%S]$paramSuffix"
                         val expr = when (param.type.declaration.simpleName.asString()) {
-                            "Int"     -> "$base.toInt()"
-                            "Long"    -> "$base.toLong()"
-                            "Double"  -> "$base.toDouble()"
-                            "Boolean" -> "$base.toBoolean()"
+                            "Int"     -> "$base$castPrefix.toInt()"
+                            "Long"    -> "$base$castPrefix.toLong()"
+                            "Double"  -> "$base$castPrefix.toDouble()"
+                            "Boolean" -> "$base$castPrefix.toBoolean()"
                             else      -> base
                         }
                         funBuilder.addStatement("val %N = $expr", param.name, param.key)
