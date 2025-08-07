@@ -46,6 +46,11 @@ class ServiceGenerator(
                 funBuilder.addModifiers(KModifier.SUSPEND)
             }
 
+            funBuilder.addParameter(
+                "call",
+                ClassName("io.ktor.server.routing", "RoutingCall")
+            )
+
             ep.parameters.forEach { param ->
                 val typeName: TypeName = when (param) {
                     is EndpointParameter.Body ->
@@ -148,7 +153,7 @@ class ServiceGenerator(
 
             val argsList = ep.parameters.joinToString(", ") { it.name }
 
-            funBuilder.addStatement("val result = impl.%N($argsList)", ep.name)
+            funBuilder.addStatement("val result = impl.%N(call, $argsList)", ep.name)
 
             if (ep.returnType.parameterType.isMarkedNullable) {
                 funBuilder.beginControlFlow("if (result != null)")

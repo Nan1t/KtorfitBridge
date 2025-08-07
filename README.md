@@ -4,3 +4,6 @@ This is simple KSP plugin that takes Ktorfit API specifications (services, endpo
 
 ## Usage
 
+### Add Jitpack repository
+
+### Add KSP plugin
