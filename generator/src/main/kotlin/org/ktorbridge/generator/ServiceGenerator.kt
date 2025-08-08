@@ -153,16 +153,20 @@ class ServiceGenerator(
 
             val argsList = ep.parameters.joinToString(", ") { it.name }
 
-            funBuilder.addStatement("val result = impl.%N(call, $argsList)", ep.name)
-
-            if (ep.returnType.parameterType.isMarkedNullable) {
-                funBuilder.beginControlFlow("if (result != null)")
-                funBuilder.addStatement("call.%M(result)", respondFn)
-                funBuilder.nextControlFlow("else")
-                funBuilder.addStatement("call.%M(%M.NotFound)", respondFn, httpStatus)
-                funBuilder.endControlFlow()
+            if (ep.returnType.parameterType.declaration.simpleName.asString() == "Unit") {
+                funBuilder.addStatement("impl.%N(call, $argsList)", ep.name)
             } else {
-                funBuilder.addStatement("call.%M(result)", respondFn)
+                funBuilder.addStatement("val result = impl.%N(call, $argsList)", ep.name)
+
+                if (ep.returnType.parameterType.isMarkedNullable) {
+                    funBuilder.beginControlFlow("if (result != null)")
+                    funBuilder.addStatement("call.%M(result)", respondFn)
+                    funBuilder.nextControlFlow("else")
+                    funBuilder.addStatement("call.%M(%M.NotFound)", respondFn, httpStatus)
+                    funBuilder.endControlFlow()
+                } else {
+                    funBuilder.addStatement("call.%M(result)", respondFn)
+                }
             }
 
             funBuilder.endControlFlow()

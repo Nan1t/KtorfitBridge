@@ -27,9 +27,12 @@ interface UserService {
     suspend fun findQuery(@Query("id") id: Long, @Query("fast") fast: Boolean? = null): User
 
     @POST("add")
-    suspend fun add(@Body user: User)
+    suspend fun add(@Body user: User): EmptyResult
 
-    @POST("avatar")
-    suspend fun uploadAvatar(@Body mp: MultiPartFormDataContent)
+    @POST("user/uploadAvatar")
+    suspend fun uploadAvatar(@Body mp: MultiPartFormDataContent): EmptyResult
+
+    @GET("user/getAvatar/{userId}")
+    suspend fun getAvatar(@Path("userId") userId: Int)
 
 }
